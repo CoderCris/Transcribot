@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "transcribot"
+version = "0.1.0"
+description = "CLI local para transcripción de audio/video con diarización."
+requires-python = ">=3.11"
+readme = "README.md"
+dependencies = [
+    "pydub>=0.25.1",
+    "click>=8.1.7",
+    "pyyaml>=6.0.1",
+    "audioop-lts>=0.2.1; python_version>='3.13'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+transcribot = "transcribot.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/transcribot"]

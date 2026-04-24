@@ -1,0 +1,9 @@
+model_size: auto
+language: es
+chunk_duration: 600
+compute_type: auto
+device: auto
+hf_token: null
+output_format: txt
+log_level: INFO
+log_file: null
