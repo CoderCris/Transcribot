@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import shutil
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -67,3 +68,56 @@ def detect_device() -> dict[str, Any]:
 
     logger.info("No se detectó GPU CUDA; se usará CPU con compute_type=int8")
     return info
+
+
+def check_system_requirements() -> dict[str, Any]:
+    """Verifica dependencias de sistema/Python críticas para el pipeline.
+
+    Returns:
+        Diccionario con flags de disponibilidad y una lista `warnings` con mensajes
+        accionables para el usuario (strings vacíos implican "todo en orden").
+    """
+    result: dict[str, Any] = {
+        "ffmpeg_available": False,
+        "torch_available": False,
+        "ctranslate2_available": False,
+        "faster_whisper_available": False,
+        "warnings": [],
+    }
+
+    if shutil.which("ffmpeg"):
+        result["ffmpeg_available"] = True
+    else:
+        result["warnings"].append(
+            "ffmpeg no está en PATH; la extracción de audio fallará para formatos "
+            "comprimidos (mp3, mp4, m4a, etc.)."
+        )
+
+    try:
+        import torch  # type: ignore[import-not-found]  # noqa: F401
+
+        result["torch_available"] = True
+    except ImportError:
+        result["warnings"].append(
+            "torch no está instalado; la detección de CUDA intentará via ctranslate2."
+        )
+
+    try:
+        import ctranslate2  # type: ignore[import-not-found]  # noqa: F401
+
+        result["ctranslate2_available"] = True
+    except ImportError:
+        result["warnings"].append(
+            "ctranslate2 no está instalado; faster-whisper no podrá cargar modelos."
+        )
+
+    try:
+        import faster_whisper  # noqa: F401
+
+        result["faster_whisper_available"] = True
+    except ImportError:
+        result["warnings"].append(
+            "faster-whisper no está instalado; ejecuta `pip install -e .` de nuevo."
+        )
+
+    return result

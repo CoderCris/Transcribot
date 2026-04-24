@@ -13,6 +13,7 @@ dependencies = [
     "click>=8.1.7",
     "pyyaml>=6.0.1",
     "audioop-lts>=0.2.1; python_version>='3.13'",
+    "faster-whisper>=1.1.0",
 ]
 
 [project.optional-dependencies]
@@ -25,3 +26,8 @@ transcribot = "transcribot.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/transcribot"]
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: tests que cargan modelos pesados; se omiten salvo que se pase --run-slow",
+]
